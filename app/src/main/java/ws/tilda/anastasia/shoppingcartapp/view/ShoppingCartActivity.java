@@ -1,0 +1,172 @@
+package ws.tilda.anastasia.shoppingcartapp.view;
+
+import android.os.Parcelable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ws.tilda.anastasia.shoppingcartapp.R;
+import ws.tilda.anastasia.shoppingcartapp.model.Product;
+import ws.tilda.anastasia.shoppingcartapp.model.ShoppingCart;
+
+public class ShoppingCartActivity extends AppCompatActivity {
+    public static final String PRODUCTS = "channels";
+    private static final String CURRENT_PRODUCT_CODE = "current_product_code";
+
+    private ShoppingCart mShoppingCart;
+    private List<Product> mProducts;
+    private int mCurrentProductCode;
+
+    private EditText mProductCodeInput;
+    private RecyclerView mProductRecyclerView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_shopping_cart);
+
+        adjustToSoftKeybord();
+
+        mShoppingCart = new ShoppingCart();
+        mShoppingCart.addFirst(new Product(17652, "Smart Phone", 399.0));
+        mShoppingCart.addFirst(new Product(37876, "MacBook Pro", 1499.0));
+        mShoppingCart.addFirst(new Product(38762, "Loud Speakers", 299.0));
+        mShoppingCart.addFirst(new Product(17652, "Smart Phone", 399.0));
+        mShoppingCart.addFirst(new Product(37876, "MacBook Pro", 1499.0));
+        mShoppingCart.addFirst(new Product(38762, "Loud Speakers", 299.0));
+
+        mProducts = mShoppingCart.getProductList();
+
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setTitle("Shopping Cart App");
+
+        mProductCodeInput = findViewById(R.id.product_code_input);
+        mProductRecyclerView = findViewById(R.id.product_list_recycler_view);
+
+        mProductRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mProductCodeInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    try {
+//                        validateCodeInput();
+                        mCurrentProductCode = Integer.parseInt(mProductCodeInput.getText().toString());
+                        reactOnCurrentProductCode(mCurrentProductCode);
+
+                    } catch (NumberFormatException ex) {
+                        ex.printStackTrace();
+                        Toast.makeText(getApplicationContext(), R.string.warning_toast_if_input_isEmpty,
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+            }
+        });
+
+
+        if (savedInstanceState != null) {
+            mProducts = savedInstanceState.getParcelableArrayList(PRODUCTS);
+            mCurrentProductCode = savedInstanceState.getInt(CURRENT_PRODUCT_CODE);
+            updateUI(mProducts);
+        } else {
+            updateUI(mProducts);
+        }
+
+
+    }
+
+//    private void validateCodeInput() {
+//        if (mProductCodeInput.getText().equals("")) {
+//            mProductCodeInput.setText(0);
+////            Toast.makeText(getApplicationContext(), "Code is zero, input again!",
+////                    Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+    private void reactOnCurrentProductCode(int code) {
+        if (isCurrentProductCodeNew(code)) {
+            // launch ProductCreateActivity
+            Toast.makeText(getApplicationContext(), "Launching NewProductActivity",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            // launch dialog
+            Toast.makeText(getApplicationContext(), "Product code already exists",
+                    Toast.LENGTH_SHORT).show();
+
+        }
+
+
+    }
+
+    private void adjustToSoftKeybord() {
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    }
+
+    private boolean isCurrentProductCodeNew(int code) {
+        for (Product product : mProducts) {
+            if (code == product.getCode()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private void updateUI(List<Product> products) {
+        if (products != null) {
+            setupAdapter(products);
+        } else {
+            Toast.makeText(this, "There are no products yet", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupAdapter(List<Product> products) {
+        mProductRecyclerView.setAdapter(new ProductListAdapter(products));
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_shopping_cart, menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_shopping_cart:
+//                Open sum - up - and - close - dialog
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(PRODUCTS, (ArrayList<? extends Parcelable>) mProducts);
+//        outState.putInt(CURRENT_PRODUCT_CODE, Integer.parseInt(mProductCodeInput.getText().toString()));
+        outState.putInt(CURRENT_PRODUCT_CODE, mCurrentProductCode);
+
+        super.onSaveInstanceState(outState);
+    }
+
+
+}
