@@ -2,6 +2,7 @@ package ws.tilda.anastasia.shoppingcartapp.view;
 
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
     public static final String PRODUCTS = "products";
     public static final String CURRENT_PRODUCT_CODE = "current_product_code";
     public static final String NEW_PRODUCT = "new product";
+    public static final String SHOPPING_CART = "shopping cart";
+
     public static final int REQUEST_CODE = 1;
 
 
@@ -75,6 +78,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
 
         if (savedInstanceState != null) {
+            mShoppingCart = savedInstanceState.getParcelable(SHOPPING_CART);
             mProducts = savedInstanceState.getParcelableArrayList(PRODUCTS);
             mCurrentProductCode = savedInstanceState.getInt(CURRENT_PRODUCT_CODE);
             updateUI(mProducts);
@@ -100,6 +104,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
+            mShoppingCart = savedInstanceState.getParcelable(SHOPPING_CART);
             mProducts = savedInstanceState.getParcelableArrayList(PRODUCTS);
             mCurrentProductCode = savedInstanceState.getInt(CURRENT_PRODUCT_CODE);
             updateUI(mProducts);
@@ -155,6 +160,18 @@ public class ShoppingCartActivity extends AppCompatActivity {
         dialog.show(getFragmentManager(), "error_dialog");
     }
 
+    private void showExitDialog(String message) {
+        ExitDialogFragment exitDialogFragment = ExitDialogFragment.newInstance(message);
+        exitDialogFragment.show(getFragmentManager(), "exit_dialog");
+    }
+
+    @NonNull
+    private String getLastMessage() {
+        return "Shopping Cart contains "
+                + mShoppingCart.getProductList().size()
+                + " products with total price of  "
+                + mShoppingCart.getSumPrice() + " euro";
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,9 +185,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_shopping_cart:
-//                Open sum - up - and - close - dialog
-//                return true;
-
+                String lastMessage = getLastMessage();
+                showExitDialog(lastMessage);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -180,6 +196,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(PRODUCTS, (ArrayList<? extends Parcelable>) mProducts);
         outState.putInt(CURRENT_PRODUCT_CODE, mCurrentProductCode);
+        outState.putParcelable(SHOPPING_CART, mShoppingCart);
 
         super.onSaveInstanceState(outState);
     }
