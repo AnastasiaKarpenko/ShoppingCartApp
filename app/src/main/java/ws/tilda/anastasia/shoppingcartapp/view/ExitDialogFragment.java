@@ -26,7 +26,9 @@ public class ExitDialogFragment extends DialogFragment {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 getActivity());
         alertDialogBuilder.setTitle("Exit Shopping Cart?");
-        alertDialogBuilder.setMessage(getArguments().getString("message"));
+        if (getArguments()!= null) {
+            alertDialogBuilder.setMessage(getArguments().getString("message"));
+        }
         alertDialogBuilder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

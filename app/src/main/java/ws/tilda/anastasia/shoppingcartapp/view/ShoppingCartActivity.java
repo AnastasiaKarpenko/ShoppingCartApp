@@ -48,6 +48,10 @@ public class ShoppingCartActivity extends AppCompatActivity {
         adjustToSoftKeybord();
 
         mShoppingCart = new ShoppingCart();
+        mShoppingCart.addFirst(new Product(162534, "Smart phone", 399.0));
+        mShoppingCart.addFirst(new Product(615243, "Smart watch", 599.0));
+        mShoppingCart.addFirst(new Product(273645, "Mac Book Pro", 1599.0));
+
 
         mProducts = mShoppingCart.getProductList();
 
@@ -85,8 +89,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
         } else {
             updateUI(mProducts);
         }
-
-
     }
 
     @Override
@@ -99,6 +101,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
             mProductCodeInput.setText("");
         }
     }
+
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {

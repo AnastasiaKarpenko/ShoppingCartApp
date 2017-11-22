@@ -47,6 +47,7 @@ public class CreateProductActivity extends AppCompatActivity {
         adjustToSoftKeybord();
 
         ActionBar mActionBar = getSupportActionBar();
+        assert mActionBar != null;
         mActionBar.setTitle("New Product Details");
         mActionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -61,8 +62,13 @@ public class CreateProductActivity extends AppCompatActivity {
             mNewProductPrice = savedInstanceState.getDouble(NEW_PRODUCT_PRICE);
 
         } else {
-            mProducts = getIntent().getParcelableArrayListExtra(PRODUCTS);
-            mProductCode = getIntent().getIntExtra(CURRENT_PRODUCT_CODE, 0);
+            Intent intent = getIntent();
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                mProducts = getIntent().getParcelableArrayListExtra(PRODUCTS);
+                mProductCode = getIntent().getIntExtra(CURRENT_PRODUCT_CODE, 0);
+            }
+
         }
 
         mCodeFieldTextView = findViewById(R.id.new_product_code_field);
