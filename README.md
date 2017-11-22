@@ -1,4 +1,4 @@
 # ShoppingCartApp
 Basic shopping cart application
 
-An assignment for a company (recruitment).
+An assignment for a company .
