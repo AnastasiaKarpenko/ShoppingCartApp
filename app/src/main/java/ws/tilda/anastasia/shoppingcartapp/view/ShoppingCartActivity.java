@@ -1,6 +1,7 @@
 package ws.tilda.anastasia.shoppingcartapp.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -16,12 +17,16 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ws.tilda.anastasia.shoppingcartapp.R;
 import ws.tilda.anastasia.shoppingcartapp.model.Product;
 import ws.tilda.anastasia.shoppingcartapp.model.ShoppingCart;
+
+import static android.content.SharedPreferences.*;
 
 public class ShoppingCartActivity extends AppCompatActivity {
     public static final String PRODUCTS = "products";
@@ -40,17 +45,21 @@ public class ShoppingCartActivity extends AppCompatActivity {
     private EditText mProductCodeInput;
     private RecyclerView mProductRecyclerView;
 
+    SharedPreferences mSharedPreferences;
+    Editor mEditor;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_cart);
 
+        mSharedPreferences = getPreferences(MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+
         adjustToSoftKeybord();
 
-        mShoppingCart = new ShoppingCart();
-        mShoppingCart.addFirst(new Product(162534, "Smart phone", 399.0));
-        mShoppingCart.addFirst(new Product(615243, "Smart watch", 599.0));
-        mShoppingCart.addFirst(new Product(273645, "Mac Book Pro", 1599.0));
+        initializeShoppingCart();
 
 
         mProducts = mShoppingCart.getProductList();
@@ -91,17 +100,60 @@ public class ShoppingCartActivity extends AppCompatActivity {
         }
     }
 
+    private void initializeShoppingCart() {
+        mShoppingCart = new ShoppingCart();
+        mShoppingCart.addFirst(new Product(162534, "Smart phone", 399.0));
+        mShoppingCart.addFirst(new Product(615243, "Smart watch", 599.0));
+        mShoppingCart.addFirst(new Product(273645, "Mac Book Pro", 1599.0));
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == resultCode) {
-            mNewProduct = data.getParcelableExtra(NEW_PRODUCT);
-            mShoppingCart.addFirst(mNewProduct);
+    protected void onResume() {
+        super.onResume();
+        if (mShoppingCart == null) {
+            initializeShoppingCart();
+        } else {
+            mShoppingCart = getObject();
             updateUI(mShoppingCart.getProductList());
             mProductCodeInput.setText("");
         }
     }
 
+    @Override
+    protected void onStop() {
+        saveObject(mShoppingCart);
+        super.onStop();
+    }
+
+    private void saveObject(ShoppingCart object) {
+        Gson gson = new Gson();
+        String json = gson.toJson(object);
+        mEditor.putString("Current Shopping Cart", json);
+        mEditor.commit();
+    }
+
+    private ShoppingCart getObject() {
+        Gson gson = new Gson();
+        String json = mSharedPreferences.getString("Current Shopping Cart", "");
+        ShoppingCart object = gson.fromJson(json, ShoppingCart.class);
+        return object;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == resultCode) {
+
+            Bundle extras = data.getExtras();
+            if (extras != null) {
+                mNewProduct = data.getParcelableExtra(NEW_PRODUCT);
+            }
+
+            mShoppingCart.addFirst(mNewProduct);
+
+            saveObject(mShoppingCart);
+        }
+    }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {

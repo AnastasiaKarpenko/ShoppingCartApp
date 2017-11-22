@@ -30,10 +30,16 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     @Override
     public void onBindViewHolder(ProductViewHolder holder, int position) {
         Product product = mProducts.get(position);
+        if (product != null) {
+            try {
+                holder.mProductName.setText(product.getName());
+                holder.mProductCode.setText(Integer.toString(product.getCode()));
+                holder.mProductPrice.setText(Double.toString(product.getPrice()));
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
 
-        holder.mProductName.setText(product.getName());
-        holder.mProductCode.setText(Integer.toString(product.getCode()));
-        holder.mProductPrice.setText(Double.toString(product.getPrice()));
+        }
     }
 
     @Override

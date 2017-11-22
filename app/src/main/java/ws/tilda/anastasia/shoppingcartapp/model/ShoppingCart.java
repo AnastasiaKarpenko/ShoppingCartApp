@@ -3,6 +3,8 @@ package ws.tilda.anastasia.shoppingcartapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class ShoppingCart implements Parcelable {
         for (Product product : mProductList) {
             sumPrice += product.getPrice();
         }
-        return sumPrice;
+        return new BigDecimal(sumPrice).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     @Override
