@@ -16,7 +16,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="Put product code"
+        android:hint="@string/hint_put_product_code"
         android:inputType="number"
         android:singleLine="true"
         app:layout_constraintBottom_toTopOf="@+id/nested_scroll_view"

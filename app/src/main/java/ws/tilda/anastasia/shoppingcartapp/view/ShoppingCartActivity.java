@@ -1,5 +1,6 @@
 package ws.tilda.anastasia.shoppingcartapp.view;
 
+import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,8 +23,11 @@ import ws.tilda.anastasia.shoppingcartapp.model.Product;
 import ws.tilda.anastasia.shoppingcartapp.model.ShoppingCart;
 
 public class ShoppingCartActivity extends AppCompatActivity {
-    public static final String PRODUCTS = "channels";
-    private static final String CURRENT_PRODUCT_CODE = "current_product_code";
+    public static final String PRODUCTS = "products";
+    public static final String CURRENT_PRODUCT_CODE = "current_product_code";
+    public static final String NEW_PRODUCT = "new product";
+    public static final int REQUEST_CODE = 1;
+
 
     private ShoppingCart mShoppingCart;
     private List<Product> mProducts;
@@ -40,12 +44,12 @@ public class ShoppingCartActivity extends AppCompatActivity {
         adjustToSoftKeybord();
 
         mShoppingCart = new ShoppingCart();
-        mShoppingCart.addFirst(new Product(17652, "Smart Phone", 399.0));
-        mShoppingCart.addFirst(new Product(37876, "MacBook Pro", 1499.0));
-        mShoppingCart.addFirst(new Product(38762, "Loud Speakers", 299.0));
-        mShoppingCart.addFirst(new Product(17652, "Smart Phone", 399.0));
-        mShoppingCart.addFirst(new Product(37876, "MacBook Pro", 1499.0));
-        mShoppingCart.addFirst(new Product(38762, "Loud Speakers", 299.0));
+//        mShoppingCart.addFirst(new Product(17652, "Smart Phone", 399.0));
+//        mShoppingCart.addFirst(new Product(37876, "MacBook Pro", 1499.0));
+//        mShoppingCart.addFirst(new Product(38762, "Loud Speakers", 299.0));
+//        mShoppingCart.addFirst(new Product(46464, "PC Mouse", 39.0));
+//        mShoppingCart.addFirst(new Product(58585, "Smart watch", 699.0));
+//        mShoppingCart.addFirst(new Product(39393, "TV monitor", 699.0));
 
         mProducts = mShoppingCart.getProductList();
 
@@ -71,8 +75,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), R.string.warning_toast_if_input_isEmpty,
                                 Toast.LENGTH_SHORT).show();
                     }
-
-
                 }
             }
         });
@@ -89,26 +91,25 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
     }
 
-//    private void validateCodeInput() {
-//        if (mProductCodeInput.getText().equals("")) {
-//            mProductCodeInput.setText(0);
-////            Toast.makeText(getApplicationContext(), "Code is zero, input again!",
-////                    Toast.LENGTH_SHORT).show();
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == resultCode) {
+            Product newProduct = data.getParcelableExtra(NEW_PRODUCT);
+            mShoppingCart.addFirst(newProduct);
+            updateUI(mShoppingCart.getProductList());
+            mProductCodeInput.setText("");
+        }
+    }
 
     private void reactOnCurrentProductCode(int code) {
         if (isCurrentProductCodeNew(code)) {
-            // launch ProductCreateActivity
-            Toast.makeText(getApplicationContext(), "Launching NewProductActivity",
-                    Toast.LENGTH_SHORT).show();
+            startCreateProductActivity();
         } else {
-            // launch dialog
             Toast.makeText(getApplicationContext(), "Product code already exists",
                     Toast.LENGTH_SHORT).show();
 
         }
-
 
     }
 
@@ -162,10 +163,17 @@ public class ShoppingCartActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(PRODUCTS, (ArrayList<? extends Parcelable>) mProducts);
-//        outState.putInt(CURRENT_PRODUCT_CODE, Integer.parseInt(mProductCodeInput.getText().toString()));
         outState.putInt(CURRENT_PRODUCT_CODE, mCurrentProductCode);
 
         super.onSaveInstanceState(outState);
+    }
+
+    private void startCreateProductActivity() {
+        Intent intent = new Intent(this, CreateProductActivity.class);
+        intent.putExtra(CreateProductActivity.CURRENT_PRODUCT_CODE, mCurrentProductCode);
+        intent.putParcelableArrayListExtra(CreateProductActivity.PRODUCTS, (ArrayList<? extends Parcelable>) mProducts);
+
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
 

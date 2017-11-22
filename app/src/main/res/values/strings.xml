@@ -4,5 +4,9 @@
     <string name="product_code_example">Product code</string>
     <string name="price_example">Price</string>
     <string name="editText_phrase">Input product code</string>
-    <string name="warning_toast_if_input_isEmpty">Code is empty, please input again!</string>
+    <string name="warning_toast_if_input_isEmpty">Input is empty, please insert again!</string>
+    <string name="hint_put_product_code">Put product code</string>
+    <string name="hint_put_product_name">Put product name</string>
+    <string name="hint_put_product_price">Put product price</string>
+    <string name="some_empty_fields_warning_toast">Some fields are empty, input again!</string>
 </resources>

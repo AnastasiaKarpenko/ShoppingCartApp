@@ -55,7 +55,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         public ProductViewHolder(View itemView) {
             super(itemView);
 
-            mProductName = itemView.findViewById(R.id.product_name);
+            mProductName = itemView.findViewById(R.id.new_product_name);
             mProductCodeIcon = itemView.findViewById(R.id.code_icon);
             mProductCode = itemView.findViewById(R.id.product_code);
             mProductPriceIcon = itemView.findViewById(R.id.price_icon);
