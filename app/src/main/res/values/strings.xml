@@ -13,4 +13,5 @@
     <string name="error_message">Product with this code already exists in the shopping cart</string>
     <string name="positive_button">OK</string>
     <string name="actionbar_title">Shopping Cart App</string>
+    <string name="toast_no_products">There are no products yet</string>
 </resources>

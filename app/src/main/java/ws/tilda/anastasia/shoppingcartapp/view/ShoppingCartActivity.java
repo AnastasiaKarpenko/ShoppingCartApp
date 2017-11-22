@@ -33,6 +33,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
     public static final String CURRENT_PRODUCT_CODE = "current_product_code";
     public static final String NEW_PRODUCT = "new product";
     public static final String SHOPPING_CART = "shopping cart";
+    public static final String OBJECT_KEY = "Current Shopping Cart";
+
 
     public static final int REQUEST_CODE = 1;
 
@@ -128,13 +130,13 @@ public class ShoppingCartActivity extends AppCompatActivity {
     private void saveObject(ShoppingCart object) {
         Gson gson = new Gson();
         String json = gson.toJson(object);
-        mEditor.putString("Current Shopping Cart", json);
+        mEditor.putString(OBJECT_KEY, json);
         mEditor.commit();
     }
 
     private ShoppingCart getObject() {
         Gson gson = new Gson();
-        String json = mSharedPreferences.getString("Current Shopping Cart", "");
+        String json = mSharedPreferences.getString(OBJECT_KEY, "");
         ShoppingCart object = gson.fromJson(json, ShoppingCart.class);
         return object;
     }
@@ -194,7 +196,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         if (products != null) {
             setupAdapter(products);
         } else {
-            Toast.makeText(this, "There are no products yet", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.toast_no_products, Toast.LENGTH_LONG).show();
         }
     }
 
