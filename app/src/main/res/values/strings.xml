@@ -9,4 +9,8 @@
     <string name="hint_put_product_name">Put product name</string>
     <string name="hint_put_product_price">Put product price</string>
     <string name="some_empty_fields_warning_toast">Some fields are empty, input again!</string>
+    <string name="error_title">Oops...</string>
+    <string name="error_message">Product with this code already exists in the shopping cart</string>
+    <string name="positive_button">OK</string>
+    <string name="actionbar_title">Shopping Cart App</string>
 </resources>

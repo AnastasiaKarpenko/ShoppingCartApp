@@ -32,6 +32,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
     private ShoppingCart mShoppingCart;
     private List<Product> mProducts;
     private int mCurrentProductCode;
+    private Product mNewProduct;
 
     private EditText mProductCodeInput;
     private RecyclerView mProductRecyclerView;
@@ -44,17 +45,11 @@ public class ShoppingCartActivity extends AppCompatActivity {
         adjustToSoftKeybord();
 
         mShoppingCart = new ShoppingCart();
-//        mShoppingCart.addFirst(new Product(17652, "Smart Phone", 399.0));
-//        mShoppingCart.addFirst(new Product(37876, "MacBook Pro", 1499.0));
-//        mShoppingCart.addFirst(new Product(38762, "Loud Speakers", 299.0));
-//        mShoppingCart.addFirst(new Product(46464, "PC Mouse", 39.0));
-//        mShoppingCart.addFirst(new Product(58585, "Smart watch", 699.0));
-//        mShoppingCart.addFirst(new Product(39393, "TV monitor", 699.0));
 
         mProducts = mShoppingCart.getProductList();
 
         ActionBar mActionBar = getSupportActionBar();
-        mActionBar.setTitle("Shopping Cart App");
+        mActionBar.setTitle(R.string.actionbar_title);
 
         mProductCodeInput = findViewById(R.id.product_code_input);
         mProductRecyclerView = findViewById(R.id.product_list_recycler_view);
@@ -66,7 +61,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     try {
-//                        validateCodeInput();
                         mCurrentProductCode = Integer.parseInt(mProductCodeInput.getText().toString());
                         reactOnCurrentProductCode(mCurrentProductCode);
 
@@ -95,10 +89,20 @@ public class ShoppingCartActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == resultCode) {
-            Product newProduct = data.getParcelableExtra(NEW_PRODUCT);
-            mShoppingCart.addFirst(newProduct);
+            mNewProduct = data.getParcelableExtra(NEW_PRODUCT);
+            mShoppingCart.addFirst(mNewProduct);
             updateUI(mShoppingCart.getProductList());
             mProductCodeInput.setText("");
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mProducts = savedInstanceState.getParcelableArrayList(PRODUCTS);
+            mCurrentProductCode = savedInstanceState.getInt(CURRENT_PRODUCT_CODE);
+            updateUI(mProducts);
         }
     }
 
@@ -106,9 +110,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         if (isCurrentProductCodeNew(code)) {
             startCreateProductActivity();
         } else {
-            Toast.makeText(getApplicationContext(), "Product code already exists",
-                    Toast.LENGTH_SHORT).show();
-
+            alertUserAboutError();
         }
 
     }
@@ -140,6 +142,19 @@ public class ShoppingCartActivity extends AppCompatActivity {
         mProductRecyclerView.setAdapter(new ProductListAdapter(products));
     }
 
+    private void startCreateProductActivity() {
+        Intent intent = new Intent(this, CreateProductActivity.class);
+        intent.putExtra(CreateProductActivity.CURRENT_PRODUCT_CODE, mCurrentProductCode);
+        intent.putParcelableArrayListExtra(CreateProductActivity.PRODUCTS, (ArrayList<? extends Parcelable>) mProducts);
+
+        startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    private void alertUserAboutError() {
+        AlertDialogFragment dialog = new AlertDialogFragment();
+        dialog.show(getFragmentManager(), "error_dialog");
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -155,6 +170,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
             case R.id.save_shopping_cart:
 //                Open sum - up - and - close - dialog
 //                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -166,14 +182,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
         outState.putInt(CURRENT_PRODUCT_CODE, mCurrentProductCode);
 
         super.onSaveInstanceState(outState);
-    }
-
-    private void startCreateProductActivity() {
-        Intent intent = new Intent(this, CreateProductActivity.class);
-        intent.putExtra(CreateProductActivity.CURRENT_PRODUCT_CODE, mCurrentProductCode);
-        intent.putParcelableArrayListExtra(CreateProductActivity.PRODUCTS, (ArrayList<? extends Parcelable>) mProducts);
-
-        startActivityForResult(intent, REQUEST_CODE);
     }
 
 
